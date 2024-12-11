@@ -25,3 +25,9 @@ Voici la syntaxe pour écrire un commentaire dans un fichier .cshtml
 ```
 
 Voici comment installer des dépendances tierces. Dirigez-vous sur le site nuget.org qui est la source principal lorsque l'on tente d'ajouter des fonctionnalités supplémentaires à un projet.
+
+## Prise de note mercredi 13 décembre
+
+Nous allons devoir installer 2 packages pour mettre en place un système d'authentification
+
+Microsoft.AspNetCore.Identity.UI et Microsoft.AspNetCore.Identity.EntityFrameworkCore

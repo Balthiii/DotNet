@@ -1,22 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
-using mvc.Data;
 using mvc.Models;
+using Microsoft.AspNetCore.Identity;
 
 public class TeacherController : Controller
 {
-    private readonly ApplicationDbContext _context;
+    private readonly UserManager<Teacher> _userManager;
 
-    public TeacherController(ApplicationDbContext context)
+    public TeacherController(UserManager<Teacher> userManager)
     {
-        _context = context;
+        _userManager = userManager;
     }
 
     // Afficher la liste des enseignants depuis la base de données
     public IActionResult Index()
     {
-        // Récupérer tous les enseignants depuis la base de données
-        var teachers = _context.Teachers.ToList();
-        return View(teachers);  // Passer la liste des enseignants à la vue
+        var teachers = _userManager.Users.ToList();
+        return View(teachers);
     }
 
     // Ajouter un Teacher
@@ -27,35 +26,41 @@ public class TeacherController : Controller
     }
 
     [HttpPost]
-    public IActionResult Add(Teacher teacher)
+    public async Task<IActionResult> Add(Teacher teacher)
     {
         if (!ModelState.IsValid)
         {
             return View();
         }
 
-        _context.Teachers.Add(teacher);
-        _context.SaveChanges();
-        return RedirectToAction("Index");
+        var result = await _userManager.CreateAsync(teacher, "DefaultPassword123!");
+        if (result.Succeeded)
+        {
+            return RedirectToAction("Index");
+        }
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+        return View();
     }
 
     // Afficher les détails d'un Teacher
-    public IActionResult ShowDetails(int id)
+    public async Task<IActionResult> ShowDetails(string id)
     {
-        // Récupérer un enseignant spécifique par ID depuis la base de données
-        var teacher = _context.Teachers.Find(id);
+        var teacher = await _userManager.FindByIdAsync(id);
         if (teacher == null)
         {
-            return NotFound();  // Si l'enseignant n'est pas trouvé
+            return NotFound();
         }
         return View(teacher);
     }
 
     // Modifier un Teacher
     [HttpGet]
-    public IActionResult Update(int id)
+    public async Task<IActionResult> Update(string id)
     {
-        var teacher = _context.Teachers.Find(id);
+        var teacher = await _userManager.FindByIdAsync(id);
         if (teacher == null)
         {
             return NotFound();
@@ -64,9 +69,8 @@ public class TeacherController : Controller
         return View(teacher);
     }
 
-
     [HttpPost]
-    public IActionResult Update(int id, Teacher teacher)
+    public async Task<IActionResult> Update(string id, Teacher teacher)
     {
         if (id != teacher.Id)
         {
@@ -76,25 +80,35 @@ public class TeacherController : Controller
         {
             return View(teacher);
         }
-        var existingTeacher = _context.Teachers.Find(id);
+
+        var existingTeacher = await _userManager.FindByIdAsync(id);
         if (existingTeacher == null)
         {
             return NotFound();
         }
+
+        // Mise à jour des informations de l'enseignant
         existingTeacher.Firstname = teacher.Firstname;
         existingTeacher.Lastname = teacher.Lastname;
-        _context.SaveChanges();
+        existingTeacher.PersonalWebSite = teacher.PersonalWebSite;
 
-        // Rediriger vers la page d'index
-        return RedirectToAction("Index");
+        var result = await _userManager.UpdateAsync(existingTeacher);
+        if (result.Succeeded)
+        {
+            return RedirectToAction("Index");
+        }
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+        return View(teacher);
     }
 
-
-
+    // Supprimer un Teacher
     [HttpGet]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(string id)
     {
-        var teacher = _context.Teachers.Find(id);
+        var teacher = await _userManager.FindByIdAsync(id);
         if (teacher == null)
         {
             return NotFound();
@@ -104,18 +118,23 @@ public class TeacherController : Controller
     }
 
     [HttpPost, ActionName("Delete")]
-    public IActionResult DeleteConfirmed(int id)
+    public async Task<IActionResult> DeleteConfirmed(string id)
     {
-        var teacher = _context.Teachers.Find(id);
+        var teacher = await _userManager.FindByIdAsync(id);
         if (teacher == null)
         {
             return NotFound();
         }
 
-        _context.Teachers.Remove(teacher);
-        _context.SaveChanges();
-
+        var result = await _userManager.DeleteAsync(teacher);
+        if (result.Succeeded)
+        {
+            return RedirectToAction("Index");
+        }
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
         return RedirectToAction("Index");
     }
-
 }
