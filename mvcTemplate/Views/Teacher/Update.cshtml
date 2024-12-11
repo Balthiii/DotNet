@@ -1,0 +1,16 @@
+@model mvc.Models.Teacher
+
+<h2>Edit Teacher</h2>
+
+<form asp-action="Update" method="post">
+    <div class="form-group">
+        <label for="Firstname">First Name</label>
+        <input type="text" class="form-control" id="Firstname" name="Firstname" value="@Model.Firstname" required />
+    </div>
+    <div class="form-group">
+        <label for="Lastname">Last Name</label>
+        <input type="text" class="form-control" id="Lastname" name="Lastname" value="@Model.Lastname" required />
+    </div>
+    <input type="hidden" name="Id" value="@Model.Id" /> <!-- Assurez-vous que l'ID est bien passé -->
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
