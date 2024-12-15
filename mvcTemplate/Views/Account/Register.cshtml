@@ -42,6 +42,14 @@
         <input asp-for="PersonalWebSite" class="form-control" />
         <span asp-validation-for="PersonalWebSite" class="text-danger"></span>
     </div>
+    <div class="form-group">
+        <label asp-for="IsTeacher" class="control-label"></label>
+        <div>
+            <input asp-for="IsTeacher" type="radio" value="true" /> Enseignant
+            <input asp-for="IsTeacher" type="radio" value="false" /> Étudiant
+        </div>
+        <span asp-validation-for="IsTeacher" class="text-danger"></span>
+    </div>
 
     <button type="submit" class="btn btn-primary">Register</button>
 </form>

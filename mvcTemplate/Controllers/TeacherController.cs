@@ -11,14 +11,14 @@ public class TeacherController : Controller
         _userManager = userManager;
     }
 
-    // Afficher la liste des enseignants depuis la base de données
-    public IActionResult Index()
+    // Afficher uniquement les enseignants
+    public async Task<IActionResult> Index()
     {
-        var teachers = _userManager.Users.ToList();
+        var teachers = await _userManager.GetUsersInRoleAsync("Teacher");
         return View(teachers);
     }
 
-    // Ajouter un Teacher
+    // Ajouter un enseignant
     [HttpGet]
     public IActionResult Add()
     {
@@ -28,92 +28,59 @@ public class TeacherController : Controller
     [HttpPost]
     public async Task<IActionResult> Add(Teacher teacher)
     {
-        if (!ModelState.IsValid)
-        {
-            return View();
-        }
+        if (!ModelState.IsValid) return View();
 
         var result = await _userManager.CreateAsync(teacher, "DefaultPassword123!");
         if (result.Succeeded)
         {
+            await _userManager.AddToRoleAsync(teacher, "Teacher");
             return RedirectToAction("Index");
         }
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError(string.Empty, error.Description);
-        }
+
         return View();
     }
 
-    // Afficher les détails d'un Teacher
+    // Afficher les détails d'un enseignant
     public async Task<IActionResult> ShowDetails(string id)
     {
         var teacher = await _userManager.FindByIdAsync(id);
-        if (teacher == null)
-        {
-            return NotFound();
-        }
+        if (teacher == null) return NotFound();
         return View(teacher);
     }
 
-    // Modifier un Teacher
+    // Modifier un enseignant
     [HttpGet]
     public async Task<IActionResult> Update(string id)
     {
         var teacher = await _userManager.FindByIdAsync(id);
-        if (teacher == null)
-        {
-            return NotFound();
-        }
-
+        if (teacher == null) return NotFound();
         return View(teacher);
     }
 
     [HttpPost]
     public async Task<IActionResult> Update(string id, Teacher teacher)
     {
-        if (id != teacher.Id)
-        {
-            return NotFound();
-        }
-        if (!ModelState.IsValid)
-        {
-            return View(teacher);
-        }
+        if (id != teacher.Id) return NotFound();
 
         var existingTeacher = await _userManager.FindByIdAsync(id);
-        if (existingTeacher == null)
-        {
-            return NotFound();
-        }
+        if (existingTeacher == null) return NotFound();
 
-        // Mise à jour des informations de l'enseignant
         existingTeacher.Firstname = teacher.Firstname;
         existingTeacher.Lastname = teacher.Lastname;
         existingTeacher.PersonalWebSite = teacher.PersonalWebSite;
 
         var result = await _userManager.UpdateAsync(existingTeacher);
-        if (result.Succeeded)
-        {
-            return RedirectToAction("Index");
-        }
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError(string.Empty, error.Description);
-        }
+        if (result.Succeeded) return RedirectToAction("Index");
+
         return View(teacher);
     }
 
-    // Supprimer un Teacher
+    // Supprimer un enseignant
     [HttpGet]
     public async Task<IActionResult> Delete(string id)
     {
         var teacher = await _userManager.FindByIdAsync(id);
-        if (teacher == null)
-        {
-            return NotFound();
-        }
-
+        if (teacher == null) return NotFound();
         return View(teacher);
     }
 
@@ -121,20 +88,9 @@ public class TeacherController : Controller
     public async Task<IActionResult> DeleteConfirmed(string id)
     {
         var teacher = await _userManager.FindByIdAsync(id);
-        if (teacher == null)
-        {
-            return NotFound();
-        }
+        if (teacher == null) return NotFound();
 
         var result = await _userManager.DeleteAsync(teacher);
-        if (result.Succeeded)
-        {
-            return RedirectToAction("Index");
-        }
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError(string.Empty, error.Description);
-        }
         return RedirectToAction("Index");
     }
 }

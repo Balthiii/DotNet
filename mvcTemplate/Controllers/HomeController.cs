@@ -1,33 +1,60 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-
-// une directive qui permet d'importer les classes du namespace mvc.Models
 using mvc.Models;
+using mvc.Data;
+using Microsoft.EntityFrameworkCore;
 
-namespace mvc.Controllers;
-
-public class HomeController : Controller
+namespace mvc.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-    public HomeController(ILogger<HomeController> logger)
+    public class HomeController : Controller
     {
-        _logger = logger;
-    }
+        private readonly ApplicationDbContext _context;
 
-    public IActionResult Index()
-    {
-        return View();
-    }
+        public HomeController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+        public async Task<IActionResult> Index(string title, DateTime? date, string sortBy = "date", string sortOrder = "asc")
+        {
+            var eventsQuery = _context.Events.AsQueryable();
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        Console.WriteLine("Error");
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (!string.IsNullOrEmpty(title))
+            {
+                eventsQuery = eventsQuery.Where(e => e.Title.ToLower().Contains(title.ToLower()));
+            }
+
+            if (date.HasValue)
+            {
+                eventsQuery = eventsQuery.Where(e => e.EventDate.Date == date.Value.Date);
+            }
+
+            eventsQuery = eventsQuery.Where(e => e.EventDate > DateTime.Now);
+
+            switch (sortBy.ToLower())
+            {
+                case "title":
+                    eventsQuery = sortOrder == "asc" ? eventsQuery.OrderBy(e => e.Title) : eventsQuery.OrderByDescending(e => e.Title);
+                    break;
+
+                case "date":
+                default:
+                    eventsQuery = sortOrder == "asc" ? eventsQuery.OrderBy(e => e.EventDate) : eventsQuery.OrderByDescending(e => e.EventDate);
+                    break;
+            }
+
+            var upcomingEvents = await eventsQuery.ToListAsync();
+
+            return View(upcomingEvents);
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult Error()
+        {
+            return View();
+        }
     }
 }

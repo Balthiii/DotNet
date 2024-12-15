@@ -1,4 +1,4 @@
-# Prise de note Lundi 11 décembre
+# Prise de note Lundi 10 décembre
 
 La commande dotnet new mvc -n mvc -o mvcTemplate crée un projet MVC vide appelé mvc dans le dossier mvcTemplate, prêt à être personnalisé et utilisé pour développer une application web basée sur l'architecture Model-View-Controller.
 
@@ -16,7 +16,7 @@ Un namespace (espace de noms) est un conteneur logique qui organise et regroupe 
 
 Les méthodes de controlleurs sont appelés des actions en dotnet.
 
-## Prise de note mardi 12 décembre
+## Prise de note mardi 11 décembre
 
 Voici la syntaxe pour écrire un commentaire dans un fichier .cshtml
 
@@ -26,7 +26,7 @@ Voici la syntaxe pour écrire un commentaire dans un fichier .cshtml
 
 Voici comment installer des dépendances tierces. Dirigez-vous sur le site nuget.org qui est la source principal lorsque l'on tente d'ajouter des fonctionnalités supplémentaires à un projet.
 
-## Prise de note mercredi 13 décembre
+## Prise de note mercredi 12 décembre
 
 Nous allons devoir installer 2 packages pour mettre en place un système d'authentification
 

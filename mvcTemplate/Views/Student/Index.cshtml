@@ -1,10 +1,42 @@
-@model IEnumerable<Student>
+@model IEnumerable<mvc.Models.Student>
 
-<h1>Bonjour depuis /Student/Index</h1>
-<p>Voici les informations de l'étudiant:</p>
-<ul>
-    @foreach (var student in Model)
-    {
-        <li>@student.Firstname @student.Lastname</li>
-    }
-</ul>
+<h2>Étudiants</h2>
+
+<div class="mb-3">
+    <a class="btn btn-primary" href="@Url.Action("Add", "Student")">Ajouter un étudiant</a>
+</div>
+
+<table class="table table-striped">
+    <thead class="table-light">
+        <tr>
+            <th>Prénom</th>
+            <th>Nom de famille</th>
+            <th>Spécialité</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model)
+        {
+            <tr>
+                <td>@student.Firstname</td>
+                <td>@student.Lastname</td>
+                <td>@student.Major</td>
+                <td>
+                    <a class="btn btn-info btn-sm" href="@Url.Action("ShowDetails", "Student", new { id = student.Id })"
+                        title="Voir les détails">
+                        <i class="bi bi-eye"></i> Détails
+                    </a>
+                    <a class="btn btn-warning btn-sm" href="@Url.Action("Update", "Student", new { id = student.Id })"
+                        title="Modifier">
+                        <i class="bi bi-pencil"></i> Modifier
+                    </a>
+                    <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Student", new { id = student.Id })"
+                        title="Supprimer">
+                        <i class="bi bi-trash"></i> Supprimer
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

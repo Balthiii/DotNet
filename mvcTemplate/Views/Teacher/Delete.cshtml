@@ -1,6 +1,6 @@
 @model mvc.Models.Teacher
 
-<h2>supprimer enseignant</h2>
+<h2>Supprimer un enseignant</h2>
 
 <h3>Voulez vous supprimer cet enseignant ?</h3>
 
@@ -10,6 +10,6 @@
 
 <form asp-action="Delete" method="post">
     <input type="hidden" name="Id" value="@Model.Id" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a href="@Url.Action("Index", "Teacher")" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-danger">Supprimer</button>
+    <a href="@Url.Action("Index", "Teacher")" class="btn btn-secondary">Annuler</a>
 </form>
